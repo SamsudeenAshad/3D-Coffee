@@ -20,7 +20,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "puppeteer": "^25.3.0",
     "tailwindcss": "^4",
+    "three": "^0.128.0",
     "typescript": "^5"
   }
 }

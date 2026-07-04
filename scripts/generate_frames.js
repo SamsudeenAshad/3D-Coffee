@@ -19,8 +19,11 @@ const html = `
   </style>
 </head>
 <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script>
+</body>
+</html>
+`;
+
+const threeCode = `
     const scene = new THREE.Scene();
 
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
@@ -119,9 +122,6 @@ const html = `
 
       renderer.render(scene, camera);
     };
-  </script>
-</body>
-</html>
 `;
 
 (async () => {
@@ -131,14 +131,17 @@ const html = `
   await page.setViewport({ width: 1000, height: 1000, deviceScaleFactor: 1 });
   await page.setContent(html);
   
-  await page.waitForFunction('window.THREE !== undefined');
+  console.log('Loading Three.js...');
+  await page.addScriptTag({ url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' });
+  console.log('Injecting rendering code...');
+  await page.addScriptTag({ content: threeCode });
 
   console.log('Generating frames...');
   for (let i = 1; i <= FRAMES; i++) {
-    await page.evaluate(\`window.renderFrame(\${i}, \${FRAMES})\`);
-    const fileName = \`frame\${i.toString().padStart(3, '0')}.png\`;
+    await page.evaluate(`window.renderFrame(${i}, ${FRAMES})`);
+    const fileName = `frame${i.toString().padStart(3, '0')}.png`;
     await page.screenshot({ path: path.join(OUTPUT_DIR, fileName), omitBackground: true });
-    if (i % 30 === 0) console.log(\`Generated \${i}/\${FRAMES} frames\`);
+    if (i % 30 === 0) console.log(`Generated ${i}/${FRAMES} frames`);
   }
 
   console.log('Done generating all frames.');
