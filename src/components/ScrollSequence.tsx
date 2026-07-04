@@ -68,7 +68,6 @@ export default function ScrollSequence({ totalFrames }: ScrollSequenceProps) {
 
       if (frameIndex !== currentFrameIndex) {
         currentFrameIndex = frameIndex;
-        // Schedule drawing
         animationFrameId = requestAnimationFrame(() => drawFrame(currentFrameIndex));
       }
     };
@@ -77,7 +76,6 @@ export default function ScrollSequence({ totalFrames }: ScrollSequenceProps) {
     
     // Resize canvas
     const handleResize = () => {
-      // Keep it 1000x1000 to match generated frames for best quality
       canvas.width = 1000;
       canvas.height = 1000;
       drawFrame(currentFrameIndex);
@@ -87,7 +85,6 @@ export default function ScrollSequence({ totalFrames }: ScrollSequenceProps) {
     
     // Initial setup
     handleResize(); 
-    // Initial draw once first image is loaded (in case it wasn't when resize was called)
     if (images[0]?.complete) {
         drawFrame(0);
     } else {
@@ -104,30 +101,27 @@ export default function ScrollSequence({ totalFrames }: ScrollSequenceProps) {
   const loadProgress = Math.floor((imagesLoaded / totalFrames) * 100);
 
   return (
-    <div ref={containerRef} className="relative w-full h-[400vh] bg-[#0a0a0a]">
-      {/* Sticky container to keep canvas in view while scrolling */}
-      <div className="sticky top-0 w-full h-screen flex items-center justify-center overflow-hidden">
+    <div ref={containerRef} className="scroll-container">
+      <div className="scroll-sticky">
         {loadProgress < 100 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0a0a0a] z-50 text-white font-mono">
-             <p className="text-xl mb-4 font-light tracking-widest text-neutral-300">BREWING</p>
-             <div className="w-64 h-1 bg-neutral-800 rounded-full overflow-hidden">
+          <div className="loading-overlay">
+             <p className="loading-text">BREWING</p>
+             <div className="loading-bar-bg">
                 <div 
-                  className="h-full bg-amber-600 transition-all duration-300" 
+                  className="loading-bar-fill" 
                   style={{ width: `${loadProgress}%` }}
                 />
              </div>
-             <p className="mt-4 text-neutral-500 text-sm">{loadProgress}%</p>
+             <p className="loading-percent">{loadProgress}%</p>
           </div>
         )}
         
-        {/* Canvas that holds the animation */}
         <canvas 
           ref={canvasRef} 
-          className="w-full max-w-[1200px] h-auto object-contain scale-110 md:scale-100"
+          className="scroll-canvas"
         />
 
-        {/* Optional overlay gradient to blend with next/prev sections */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-transparent to-[#0a0a0a]/80" />
+        <div className="scroll-overlay" />
       </div>
     </div>
   );
