@@ -132,7 +132,7 @@ const threeCode = `
   await page.setContent(html);
   
   console.log('Loading Three.js...');
-  await page.addScriptTag({ url: 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js' });
+  await page.addScriptTag({ path: require.resolve('three/build/three.min.js') });
   console.log('Injecting rendering code...');
   await page.addScriptTag({ content: threeCode });
 
